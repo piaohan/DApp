@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>first DApp</title>
+    <link rel="stylesheet" href="main.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>First DApp Demo</h1>
+
+        <h2 id="info"></h2>
+        <label for="name">姓名</label>
+        <input type="text" id="name">
+        <label for="age">年龄</label>
+        <input type="text" id="age">
+        <button id="button">更新</button>
+    </div>
+
+    <script>
+        var cryptoABI = [
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "getInfo",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "string"
+                    },
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "_name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "_age",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setInfo",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+        var address = "0x956c2A0370b21dE9bf4E331D1285d21d017dF548";
+        web3 = new Web3(Web3.givenProvider);
+
+        infoContract = new web3.eth.Contract(cryptoABI, address);
+
+        infoContract.methods.getInfo().call().then((result) => {
+            $('#info').html('我叫' + result[0] + ',今年' + result[1] + '岁了');
+        });
+
+        $('#button').click(async function (e) {
+            var accounts = await web3.eth.getAccounts();
+            var name = $('#name').val();
+            var age = $('#age').val();
+            console.log(name, age);
+            infoContract.methods.setInfo(name, age).send({ from: accounts[0] }).then((result) => {
+                console.log('set已经执行了');
+                console.log('setInfo返回对象:', result);
+            });
+        });
+    </script>
+</body>
+
+</html>
