@@ -23,59 +23,60 @@
     </div>
 
     <script>
-        var cryptoABI = [
-            {
-                "constant": true,
+        var cryptoABI = [{
                 "inputs": [],
                 "name": "getInfo",
-                "outputs": [
-                    {
+                "outputs": [{
+                        "internalType": "string",
                         "name": "",
                         "type": "string"
                     },
                     {
+                        "internalType": "uint256",
                         "name": "",
                         "type": "uint256"
                     }
                 ],
-                "payable": false,
                 "stateMutability": "view",
                 "type": "function"
             },
             {
-                "constant": false,
-                "inputs": [
-                    {
+                "inputs": [{
+                        "internalType": "string",
                         "name": "_name",
                         "type": "string"
                     },
                     {
+                        "internalType": "uint256",
                         "name": "_age",
                         "type": "uint256"
                     }
                 ],
                 "name": "setInfo",
                 "outputs": [],
-                "payable": false,
                 "stateMutability": "nonpayable",
                 "type": "function"
             }
         ];
-        var address = "0x956c2A0370b21dE9bf4E331D1285d21d017dF548";
-        web3 = new Web3(Web3.givenProvider);
-
+        var address = "0x5e5Aa6A5bc0A448A7373F0348D69CD3d6Cbc88C8";
+        web3 = new Web3(Web3.givenProvider || 'http://127.0.0.1:7545');
+        console.log(web3);
         infoContract = new web3.eth.Contract(cryptoABI, address);
 
-        infoContract.methods.getInfo().call().then((result) => {
-            $('#info').html('我叫' + result[0] + ',今年' + result[1] + '岁了');
-        });
+        setInterval(function () {
+            infoContract.methods.getInfo().call().then((result) => {
+                $('#info').html('我叫' + result[0] + ',今年' + result[1] + '岁了');
+            });
+        }, 1000);
 
         $('#button').click(async function (e) {
             var accounts = await web3.eth.getAccounts();
             var name = $('#name').val();
             var age = $('#age').val();
             console.log(name, age);
-            infoContract.methods.setInfo(name, age).send({ from: accounts[0] }).then((result) => {
+            infoContract.methods.setInfo(name, age).send({
+                from: accounts[0]
+            }).then((result) => {
                 console.log('set已经执行了');
                 console.log('setInfo返回对象:', result);
             });
